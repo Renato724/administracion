@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
@@ -106,6 +105,14 @@ class UserSeeder extends Seeder
             'password' => Hash::make('12345678'),
             'status' => 1,
         ]);
+
+        $admin_12 = User::create([
+            'name' => 'Rolando Payano',
+            'email' => 'payano@gmail.com',
+            'username' => 'rpayanoc1',
+            'password' => Hash::make('12345678'),
+            'status' => 1,
+        ]);
       
   
         $adminRole->syncPermissions($permissions);
@@ -120,5 +127,6 @@ class UserSeeder extends Seeder
         $admin_9->assignRole($adminRole);
         $admin_10->assignRole($adminRole);
         $admin_11->assignRole($adminRole);
+        $admin_12->assignRole($adminRole);
     }
 }

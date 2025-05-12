@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers\Panel;
 
+use App\Exports\AmountsExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAmountRequest;
 use App\Http\Requests\UpdateAmountRequest;
 use App\Http\Resources\AmountResource;
 use App\Http\Resources\AmountShowResource;
 use App\Models\Amount;
+use App\Imports\AmountImport;
 use App\Models\Category;
 use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AmountController extends Controller
 {
@@ -99,16 +102,15 @@ class AmountController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAmountRequest $request, Supplier $supplier)
+    public function update(UpdateAmountRequest $request, Amount $amount)
     {
-        Gate::authorize('update', $supplier);
+        Gate::authorize('update', $amount);
         $validated = $request->validated();
-        $validated['state'] = ($validated['state'] ?? 'inactivo') === 'activo';
-        $supplier->update($validated);
+        $amount->update($validated);
         return response()->json([
             'status' => true,
             'message' => 'egreso actualizado correctamente',
-            'amount' => new AmountResource($supplier)
+            'amount' => new AmountResource($amount)
         ]);
     }
 
@@ -122,6 +124,23 @@ class AmountController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'egreso eliminado correctamente',
+        ]);
+    }
+    // EXPORTAR A EXCEL
+    public function exportExcel()
+    {
+        return Excel::download(new AmountsExport, 'Egresos.xlsx');
+    }
+    // IMPORTAR EXCEL
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'archivo' => 'required|file|mimes:xlsx,xls,csv'
+        ]);
+
+        Excel::import(new AmountImport, $request->file('archivo'));
+        return response()->json([
+            'message' => 'Egresos importados de manera correcta',
         ]);
     }
 }

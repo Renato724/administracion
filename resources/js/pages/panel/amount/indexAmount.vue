@@ -4,8 +4,8 @@
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border md:min-h-min">
                 <div class="mb-4 mt-4 flex items-center justify-between px-6">
-                    <!-- <ToolsCustomer @import-success="loadingCustomers" />
-                    <FilterCustomer @search="searchCustomer" /> -->
+                    <ToolsAmount @import-success="loadingAmounts" />
+                    <!--<FilterCustomer @search="searchCustomer" /> -->
                 </div>
                 <TableAmount
                     :amounts-list="principal.amountList"
@@ -23,13 +23,6 @@
                     @update-amount="getIdAmount"
                 >
                 </EditAmount>
-                <!-- <EditCustomer
-                    :customer-data="principal.customerData"
-                    :modal="principal.statusModal.update"
-                    :customer-types="principal.clientTypeList"
-                    @close-modal="closeModel"
-                    @update-customer="emitUpdateCustomer"
-                /> -->
                 <Delete
                     :modal="principal.statusModal.delete"
                     :itemId="principal.idAmount"
@@ -51,7 +44,8 @@ import { Head } from '@inertiajs/vue3';
 import { onMounted } from 'vue';
 import EditAmount from './components/editAmount.vue';
 import TableAmount from './components/tableAmount.vue';
-import { AmountResponseShow } from './interface/Amount';
+import ToolsAmount from './components/toolsAmount.vue';
+import { AmountResponseShow, AmountUpdatePayload } from './interface/Amount';
 
 const { principal, loadingAmounts, deleteAmount, updateAmount, loadingShowAmount } = useAmount();
 const breadcrumbs: BreadcrumbItem[] = [
@@ -101,7 +95,17 @@ const closeModalUpdate = () => {
 };
 // get id amount
 const getIdAmount = (amount: AmountResponseShow, id: number) => {
-    updateAmount(id, amount);
+    const payload: AmountUpdatePayload = {
+        category_id: amount.category_id,
+        supplier_id: amount.supplier_id,
+        description: amount.description,
+        amount: amount.amount,
+        date_init: amount.date_init,
+    };
+
+    updateAmount(id, payload);
+    console.log('id', id);
+    console.log('actualizar', payload);
 };
 </script>
 <style scoped></style>
